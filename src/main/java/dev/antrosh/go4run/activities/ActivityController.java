@@ -1,5 +1,6 @@
 package dev.antrosh.go4run.activities;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,7 @@ public class ActivityController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
-    public ActivityId startNewActivity(@RequestBody CreateActivityDto activity) {
+    public ActivityId startNewActivity(@Valid @RequestBody CreateActivityDto activity) {
         int activityId = _activityRepository.createActivity(activity);
 
         return new ActivityId(activityId);
@@ -48,7 +49,7 @@ public class ActivityController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
-    public void updateActivity(@RequestBody Activity activity, @PathVariable int id) {
+    public void updateActivity(@Valid @RequestBody Activity activity, @PathVariable int id) {
         _activityRepository.updateActivity(activity, id);
     }
 
