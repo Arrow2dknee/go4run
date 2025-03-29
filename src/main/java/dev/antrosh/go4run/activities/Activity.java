@@ -10,5 +10,4 @@ public record Activity(
         Integer durationInMinutes,
         ActivityType type,
         Location location
-) {
-}
+) {}

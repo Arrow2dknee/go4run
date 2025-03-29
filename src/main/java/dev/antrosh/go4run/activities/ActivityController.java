@@ -1,10 +1,10 @@
 package dev.antrosh.go4run.activities;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/activities")
@@ -15,9 +15,46 @@ public class ActivityController {
         _activityRepository = repository;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/all")
     public List<Activity> getAllActivities() {
         return _activityRepository.findAll();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}")
+    public Activity getActivityById(@PathVariable Integer id) {
+        Optional<Activity> item = _activityRepository.findById(id);
+
+        if (item.isEmpty()) {
+            throw new ActivityNotFoundException();
+        }
+        return item.get();
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping()
+    public ActivityId startNewActivity(@RequestBody CreateActivityDto activity) {
+        int activityId = _activityRepository.createActivity(activity);
+
+        return new ActivityId(activityId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/{id}")
+    public Activity completeActivity(int id) {
+        return _activityRepository.completeActivity(id);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/{id}")
+    public void updateActivity(@RequestBody Activity activity, @PathVariable int id) {
+        _activityRepository.updateActivity(activity, id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteActivity(@PathVariable int id) {
+        _activityRepository.deleteActivity(id);
     }
 
     @GetMapping()
