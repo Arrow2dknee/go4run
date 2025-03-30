@@ -13,8 +13,8 @@ public record Activity(
         LocalDateTime completedOn,
         @Positive
         Integer durationInMinutes,
-        ActivityType type,
-        Location location
+        ActivityType activityType,
+        Location activityLocation
 ) {
     public Activity {
         if (!completedOn.isAfter(startedOn)) {
