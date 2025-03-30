@@ -11,21 +11,23 @@ import java.util.Optional;
 @RequestMapping("/api/activities")
 public class ActivityController {
     private final ActivityRepository _activityRepository;
+    private final ActivityDBRepository _activityDbRepository;
 
-    public ActivityController(ActivityRepository repository) {
-        _activityRepository = repository;
+    public ActivityController(ActivityRepository repository, ActivityDBRepository dbRepository) {
+        this._activityRepository = repository;
+        this._activityDbRepository = dbRepository;
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/all")
+    @GetMapping()
     public List<Activity> getAllActivities() {
-        return _activityRepository.findAll();
+        return _activityDbRepository.findAllActivities();
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     public Activity getActivityById(@PathVariable Integer id) {
-        Optional<Activity> item = _activityRepository.findById(id);
+        Optional<Activity> item = _activityDbRepository.findActivityById(id);
 
         if (item.isEmpty()) {
             throw new ActivityNotFoundException();
@@ -35,10 +37,10 @@ public class ActivityController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
-    public ActivityId startNewActivity(@Valid @RequestBody CreateActivityDto activity) {
-        int activityId = _activityRepository.createActivity(activity);
+    public ActivityId startNewActivity(@Valid @RequestBody Activity activity) {
+        _activityDbRepository.createActivity(activity);
 
-        return new ActivityId(activityId);
+        return new ActivityId(activity.id());
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -50,16 +52,11 @@ public class ActivityController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public void updateActivity(@Valid @RequestBody Activity activity, @PathVariable int id) {
-        _activityRepository.updateActivity(activity, id);
+        _activityDbRepository.updateActivity(activity, id);
     }
 
     @DeleteMapping("/{id}")
     public void deleteActivity(@PathVariable int id) {
-        _activityRepository.deleteActivity(id);
-    }
-
-    @GetMapping()
-    String homePage() {
-        return "Welcome to your activity dashboard";
+        _activityDbRepository.deleteActivity(id);
     }
 }
